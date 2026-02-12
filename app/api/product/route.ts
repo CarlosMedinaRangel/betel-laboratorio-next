@@ -21,10 +21,27 @@ export async function POST(request: Request) {
     
 
     const body = await request.json();
-    const { name, unit, stock, price, minStock, category } = body;
+    const {serial, name, unit, stock, price, minStock, category } = body;
+
+    const existingProduct = await Product.findOne({ serial });
+    if (existingProduct) {
+      return NextResponse.json( 
+        { error: "El producto con este serial ya existe" },
+        { status: 400 }
+      );
+    }
+    const existingName = await Product.findOne({ name });
+    if (existingName) {
+      return NextResponse.json( 
+        { error: "El producto con este nombre ya existe" },
+        { status: 400 }
+      );
+    }
+     
 
 
-    if (!name || !unit || !price || !minStock || !category) {
+
+    if (!serial || !name || !unit || !price || !minStock || !category) {
       return NextResponse.json(
         { error: "Faltan campos obligatorios" },
         { status: 400 }
@@ -33,6 +50,7 @@ export async function POST(request: Request) {
 
 
     const newProduct = await Product.create({
+      serial,
       name,
       unit: Number(unit),
       stock: Number(stock),       
