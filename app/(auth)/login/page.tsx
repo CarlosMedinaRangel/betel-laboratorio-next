@@ -17,8 +17,10 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   // Colores (Tu configuración visual)
-  const palePurple = "bg-[#9727aa]/5";
-  const bgColor = "bg-[#F8F2FA]";
+  const palePurple = "bg-[#FCF9FC]";
+  const bgColor = "bg-[#ffffff]";
+  const bgColor2 = "bg-[#F7EEF8]";
+ 
  
 
   // Función para enviar el formulario
@@ -45,7 +47,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className={`min-h-screen ${bgColor} md:grid md:grid-cols-[1fr_6rem] md:grid-rows-[1fr_5rem]`}>
+    <div className={`min-h-screen ${bgColor2} md:grid md:grid-cols-[1fr_6rem] md:grid-rows-[1fr_5rem]`}>
       
       {/* CUADRANTE 1: CONTENIDO PRINCIPAL */}
       <div className="relative flex items-center justify-center p-4 overflow-hidden">
