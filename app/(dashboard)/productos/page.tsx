@@ -48,7 +48,7 @@ export default function ProductosPage() {
       </div>
 
       {/* Grid Layout */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-7">
         
         {/* Sección Izquierda: La Tabla */}
         <div className="xl:col-span-2 space-y-4">
@@ -57,12 +57,7 @@ export default function ProductosPage() {
         </div>
 
         {/* Sección Derecha */}
-        <div className="space-y-4">
-           <div className="bg-white p-6 rounded-xl border border-primary/10 shadow-sm">
-              <h3 className="font-bold text-slate-700 mb-4">Resumen Rápido</h3>
-              <p className="text-sm text-slate-500">Aquí puedes poner tarjetas de stock bajo o filtros de búsqueda.</p>
-           </div>
-        </div>
+        
 
       </div>
 

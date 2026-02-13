@@ -46,10 +46,10 @@ export default function CreateProductModal({ isOpen, onClose, onProductCreated }
         throw new Error(errorData.error || "Error al guardar");
       }
 
-      // 1. Mostramos la vista de éxito
+      
       setShowSuccess(true);
       
-      // 2. Esperamos 1.5s para que se vea la animación
+      
       setTimeout(() => {
         onProductCreated(); // Avisamos al padre para cerrar y recargar
         setShowSuccess(false);
@@ -72,7 +72,7 @@ export default function CreateProductModal({ isOpen, onClose, onProductCreated }
       
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200 border-t-4 border-[#9727aa] relative" style={{ minHeight: "420px" }}>
         
-        {/* --- VISTA DE ÉXITO MEJORADA --- */}
+        
         {showSuccess ? (
           <div className="absolute inset-0 z-20 bg-white flex flex-col items-center justify-center animate-in fade-in duration-300">
             
@@ -95,6 +95,7 @@ export default function CreateProductModal({ isOpen, onClose, onProductCreated }
           /* --- VISTA DEL FORMULARIO (Sin cambios aquí) --- */
           <>
             {/* Encabezado */}
+            
             <div className="px-8 py-5 border-b border-primary/10 flex justify-between items-start bg-white sticky top-0 z-10">
               <div>
                 <h3 className="text-xl font-bold text-gray-800">Nuevo Insumo</h3>
