@@ -21,8 +21,9 @@ export default function Sidebar() {
 
   // 3. Definimos los enlaces aquí para no repetir código
   const menuItems = [
-    { name: "Dashboard", href: "/", icon: "dashboard" }, // Ojo: Si tu dashboard es "/", cambia href a "/"
+    { name: "Dashboard", href: "/", icon: "dashboard" }, 
     { name: "Productos", href: "/productos", icon: "inventory_2" },
+    { name: "Examenes", href: "/examenes", icon: "group" },
     // Aquí puedes agregar más: { name: "Pacientes", href: "/pacientes", icon: "group" },
   ];
 
@@ -36,7 +37,7 @@ export default function Sidebar() {
             alt="Logo de Betel" 
             width={70} 
             height={50} 
-            className="mb-4" // Quité text-white porque la imagen no cambia de color con texto
+            className="mb-4" 
             priority
           />
         </div>

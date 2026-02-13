@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "tailwind.config.ts.old", "app/api/product/route.js"  ],
+, "tailwind.config.ts.old", "app/api/product/route.js", "models/exam.js"  ],
   "exclude": ["node_modules"]
 }
