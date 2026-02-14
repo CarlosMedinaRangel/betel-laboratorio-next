@@ -2,12 +2,12 @@
 import { useState, useEffect } from "react";
 
 interface EditExamProps {
-  id: string;
+    code: string;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export default function EditExam({ id, onClose, onSuccess }: EditExamProps) {
+export default function EditExam({ code, onClose, onSuccess }: EditExamProps) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   
@@ -19,14 +19,14 @@ export default function EditExam({ id, onClose, onSuccess }: EditExamProps) {
     price: 0,
     tat: 24,
     resultados: "", // Aquí guardaremos la interpretación/resultados
-    status: "active"
+    status: "activo"
   });
 
   // 1. Cargar datos al abrir el componente
   useEffect(() => {
     const fetchExam = async () => {
       try {
-        const res = await fetch(`/api/examenes/${id}`);
+                const res = await fetch(`/api/examenes/${code}`);
                 const text = await res.text();
                 const data = text ? JSON.parse(text) : null;
 
@@ -38,7 +38,7 @@ export default function EditExam({ id, onClose, onSuccess }: EditExamProps) {
             price: data.price || 0,
             tat: data.tat || 24,
             resultados: data.resultados || "", // Carga lo que haya o vacío
-            status: data.status || "active"
+            status: data.status || "activo"
           });
         } else {
                     const message = data?.error || "Error al cargar el examen";
@@ -52,14 +52,14 @@ export default function EditExam({ id, onClose, onSuccess }: EditExamProps) {
       }
     };
 
-    if (id) fetchExam();
-  }, [id, onClose]);
+        if (code) fetchExam();
+    }, [code, onClose]);
 
   // 2. Guardar cambios
   const handleUpdate = async () => {
     setSaving(true);
     try {
-        const res = await fetch(`/api/examenes/${id}`, {
+            const res = await fetch(`/api/examenes/${code}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData)
@@ -170,9 +170,10 @@ export default function EditExam({ id, onClose, onSuccess }: EditExamProps) {
                     onChange={e => setFormData({...formData, status: e.target.value})}
                     className="w-full p-3 bg-white border border-slate-200 rounded-xl text-slate-600 outline-none focus:border-primary"
                 >
+                    
                      <option value="activo">Activo</option>
                      <option value="En proceso">En proceso</option>
-                     <option value="Archivado">Archivado</option>
+                     <option value="archivado">Archivado</option>
                 </select>
             </div>
 

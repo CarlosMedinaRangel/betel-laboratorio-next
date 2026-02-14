@@ -4,20 +4,6 @@ import connectDB from "@/lib/mongoose";
 import Exam from "@/models/exam";
 import Product from "@/models/product";
 
-const generateNextExamId = async () => {
-  const latest = await Exam.findOne({ id: { $regex: /^EXAM-\d+$/i } })
-    .sort({ createdAt: -1 })
-    .select("id")
-    .lean();
-
-  const lastId = latest?.id || "";
-  const match = lastId.match(/(\d+)$/);
-  const lastNumber = match ? Number.parseInt(match[1], 10) : 0;
-  const nextNumber = lastNumber + 1;
-
-  return `EXAM-${String(nextNumber).padStart(3, "0")}`;
-};
-
 
 export async function GET(request: Request) {
   try {
@@ -50,14 +36,6 @@ export async function POST(request: Request) {
     await connectDB();
     const data = await request.json();
     const payload = { ...data };
-
-    if (!payload.id) {
-      payload.id = await generateNextExamId();
-    }
-
-    if (payload.id) {
-      payload.id = String(payload.id).toUpperCase().trim();
-    }
     const components = Array.isArray(payload?.components) ? payload.components : [];
 
     const decrementStock = async (useSession?: mongoose.ClientSession) => {

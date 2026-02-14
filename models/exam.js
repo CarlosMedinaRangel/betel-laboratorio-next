@@ -24,28 +24,27 @@ const ExamComponentSchema = new Schema({
 // Esquema Principal del Examen
 const ExamSchema = new Schema(
   {
-    id: { type: String, required: true, unique: true, uppercase: true, trim: true}, 
     code: { type: String, required: true, unique: true, uppercase: true, trim: true },
     name: { type: String, required: true, trim: true },
-    category: { type: String, required: true }, 
-    sampleType: { type: String, required: true }, 
+    category: { type: String, required: true }, // Hematología, Química, etc.
+    sampleType: { type: String, required: true }, // Suero, Plasma, etc.
     methodology: { type: String },
-    tat: { type: Number, default: 24 },
+    tat: { type: Number, default: 24 }, // Turnaround Time en horas
     price: { type: Number, required: true },
-    status: { type: String, enum: ["active", "En proceso", "Archivado"], default: "En proceso" },
-    resultados: { type: String, default: "Esperando resultados..." }, 
+    status: { type: String, enum: ["activo", "En proceso", "archivado"], default: "activo" },
+    resultados: { type: String, default: "Esperando resultados..." }, // Descripción de los resultados o interpretación
     
-    
+    // Arrays de sub-documentos
     ranges: [ReferenceRangeSchema],
     components: [ExamComponentSchema],
   },
   {
-    timestamps: true, 
+    timestamps: true, // Crea automáticamente createdAt y updatedAt
     versionKey: false,
   }
 );
 
-
+// Evitar recompilar el modelo si ya existe (Hot Reload de Next.js)
 const Exam = models.Exam || model("Exam", ExamSchema);
 
 export default Exam;

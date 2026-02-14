@@ -3,11 +3,10 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ExamWorkbench from "./_components/ExamWorkbench"; 
-import EditExam from "./_components/EditExam"; // <--- IMPORTAMOS EL NUEVO MODULO
+import EditExam from "./_components/EditExam"; 
 
 // Tipo de dato para el examen (frontend)
 type ExamSummary = {
-  _id: string; 
   code: string;
   name: string;
   category: string;
@@ -96,13 +95,13 @@ export default function ExamenesPage() {
     );
   }
 
-  // 2. MODO EDICIÓN (EditExam - NUEVO)
+  // 2. MODO EDICIÓN (EditExam )
   if (editingId) {
     return (
       <div className="animate-in slide-in-from-right duration-300 relative p-8">
          {/* EditExam ya tiene su propio botón de cerrar, pero pasamos el handler */}
         <EditExam 
-          id={editingId} 
+          code={editingId} 
           onClose={handleBackToList} 
           onSuccess={handleSuccessSave} 
         />
@@ -127,6 +126,12 @@ export default function ExamenesPage() {
       </div>
 
       {/* Buscador */}
+      <div> 
+        <h3 className="text-sm text-slate-500 mb-2">
+        Ingresa el codigo del examen para poder buscarlo...
+
+        </h3>
+      </div>
       <div className="relative w-full md:w-96">
           <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
           <input type="text" placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/50 outline-none" />
@@ -140,19 +145,23 @@ export default function ExamenesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {exams.map((exam) => (
-            <div key={exam._id} className="bg-white rounded-2xl p-5 border border-slate-100 hover:shadow-xl transition-all relative overflow-hidden group">
+            <div key={exam.code} className="bg-white rounded-2xl p-5 border border-slate-100 hover:shadow-xl transition-all relative overflow-hidden group">
                <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>
                <div className="pl-3 mb-2">
-                  <span className="text-[10px] font-black uppercase bg-slate-100 text-slate-500 px-2 py-1 rounded">{exam.code}</span>
+                <span className="text-[10px] font-black uppercase bg-slate-100 text-slate-500 px-2 py-1 rounded">Codigo del examen:</span>
+                  
                </div>
-               <h3 className="pl-3 text-lg font-bold text-slate-800 mb-1">{exam.name}</h3>
+               <div className="pl-3 mb-2">
+                <span className="text-[10px] font-black uppercase bg-slate-100 text-slate-500 px-2 py-1 rounded">{exam.code}</span>
+               </div>
+               <h3 className="pl-3 text-lg font-bold text-slate-800 mb-1">Nombre: {exam.name}</h3>
                <p className="pl-3 text-xs text-slate-400 mb-4">{exam.category}</p>
                <div className="pl-3 border-t border-slate-50 pt-3 flex justify-between items-center">
                   <span className="font-black text-slate-700">${exam.price?.toFixed(2)}</span>
                   
                   {/* --- BOTÓN EDITAR CONECTADO --- */}
                   <button 
-                      onClick={() => handleEdit(exam._id)} 
+                      onClick={() => handleEdit(exam.code)} 
                       className="text-xs font-bold text-primary bg-primary/5 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"
                   >
                       Editar
