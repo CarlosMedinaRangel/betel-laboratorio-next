@@ -1,6 +1,5 @@
 // src/app/api/exams/[id]/route.ts
 import { NextResponse } from "next/server";
-import mongoose from "mongoose";
 import connectDB from "@/lib/mongoose";
 import Exam from "@/models/exam";
 
@@ -9,13 +8,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   try {
     await connectDB();
     const { id } = await params;
-    if (!id) {
-      return NextResponse.json({ error: "Id de examen requerido" }, { status: 400 });
+    const code = id?.toUpperCase().trim();
+    if (!code) {
+      return NextResponse.json({ error: "Codigo de examen requerido" }, { status: 400 });
     }
 
-    const exam = mongoose.isValidObjectId(id)
-      ? await Exam.findById(id)
-      : await Exam.findOne({ code: id.toUpperCase() });
+    const exam = await Exam.findOne({ code });
 
     if (!exam) {
       return NextResponse.json({ error: "Examen no encontrado" }, { status: 404 });
@@ -32,22 +30,17 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   try {
     await connectDB();
     const { id } = await params;
-    if (!id) {
-      return NextResponse.json({ error: "Id de examen requerido" }, { status: 400 });
+    const code = id?.toUpperCase().trim();
+    if (!code) {
+      return NextResponse.json({ error: "Codigo de examen requerido" }, { status: 400 });
     }
     const body = await request.json();
 
-    const updatedExam = mongoose.isValidObjectId(id)
-      ? await Exam.findByIdAndUpdate(
-          id,
-          { ...body },
-          { new: true }
-        )
-      : await Exam.findOneAndUpdate(
-          { code: id.toUpperCase() },
-          { ...body },
-          { new: true }
-        );
+    const updatedExam = await Exam.findOneAndUpdate(
+      { code },
+      { ...body },
+      { new: true }
+    );
 
     if (!updatedExam) {
       return NextResponse.json({ error: "Examen no encontrado" }, { status: 404 });
@@ -64,15 +57,12 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   try {
     await connectDB();
     const { id } = await params;
-    if (!id) {
-      return NextResponse.json({ error: "Id de examen requerido" }, { status: 400 });
+    const code = id?.toUpperCase().trim();
+    if (!code) {
+      return NextResponse.json({ error: "Codigo de examen requerido" }, { status: 400 });
     }
 
-    if (mongoose.isValidObjectId(id)) {
-      await Exam.findByIdAndDelete(id);
-    } else {
-      await Exam.findOneAndDelete({ code: id.toUpperCase() });
-    }
+    await Exam.findOneAndDelete({ code });
     return NextResponse.json({ message: "Examen eliminado" });
   } catch (error) {
     return NextResponse.json({ error: "Error al eliminar" }, { status: 500 });
