@@ -4,7 +4,21 @@ import connectDB from "@/lib/mongoose";
 import Exam from "@/models/exam";
 import Product from "@/models/product";
 
-// 1. ESTA ES LA QUE TE FALTA O FALLA (Para fetchExams)
+const generateNextExamId = async () => {
+  const latest = await Exam.findOne({ id: { $regex: /^EXAM-\d+$/i } })
+    .sort({ createdAt: -1 })
+    .select("id")
+    .lean();
+
+  const lastId = latest?.id || "";
+  const match = lastId.match(/(\d+)$/);
+  const lastNumber = match ? Number.parseInt(match[1], 10) : 0;
+  const nextNumber = lastNumber + 1;
+
+  return `EXAM-${String(nextNumber).padStart(3, "0")}`;
+};
+
+
 export async function GET(request: Request) {
   try {
     await connectDB();
@@ -30,12 +44,21 @@ export async function GET(request: Request) {
   }
 }
 
-// 2. ESTA ES LA QUE YA TIENES (Para guardar)
+
 export async function POST(request: Request) {
   try {
     await connectDB();
     const data = await request.json();
-    const components = Array.isArray(data?.components) ? data.components : [];
+    const payload = { ...data };
+
+    if (!payload.id) {
+      payload.id = await generateNextExamId();
+    }
+
+    if (payload.id) {
+      payload.id = String(payload.id).toUpperCase().trim();
+    }
+    const components = Array.isArray(payload?.components) ? payload.components : [];
 
     const decrementStock = async (useSession?: mongoose.ClientSession) => {
       const decremented: Array<{ productId: string; quantity: number }> = [];
@@ -72,7 +95,7 @@ export async function POST(request: Request) {
       try {
         await session.withTransaction(async () => {
           await decrementStock(session);
-          const created = await Exam.create([data], { session });
+          const created = await Exam.create([payload], { session });
           newExam = created[0];
         });
       } finally {
@@ -88,7 +111,7 @@ export async function POST(request: Request) {
 
         try {
           decremented = await decrementStock();
-          newExam = await Exam.create(data);
+          newExam = await Exam.create(payload);
           return NextResponse.json(newExam, { status: 201 });
         } catch (fallbackError: any) {
           for (const item of decremented) {

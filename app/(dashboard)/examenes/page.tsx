@@ -3,10 +3,11 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ExamWorkbench from "./_components/ExamWorkbench"; 
+import EditExam from "./_components/EditExam"; // <--- IMPORTAMOS EL NUEVO MODULO
 
 // Tipo de dato para el examen (frontend)
 type ExamSummary = {
-  _id: string; // Mongo usa _id
+  _id: string; 
   code: string;
   name: string;
   category: string;
@@ -15,20 +16,18 @@ type ExamSummary = {
 };
 
 export default function ExamenesPage() {
-  // 1. TODOS LOS HOOKS PRIMERO (Orden estricto)
   const { data: session, status } = useSession();
   const router = useRouter();
   
   // Estados de interfaz
-  const [showWorkbench, setShowWorkbench] = useState(false);
+  const [showWorkbench, setShowWorkbench] = useState(false); // Para CREAR
+  const [editingId, setEditingId] = useState<string | null>(null); // Para EDITAR (Nuevo estado)
   const [searchTerm, setSearchTerm] = useState("");
   
   // Estados de datos (Backend)
   const [exams, setExams] = useState<ExamSummary[]>([]);
   const [isLoadingExams, setIsLoadingExams] = useState(false);
 
-  // 2. EFECTOS (Side Effects)
-  
   // Redirección si no hay sesión
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -47,65 +46,71 @@ export default function ExamenesPage() {
   const fetchExams = async () => {
      setIsLoadingExams(true);
      try {
-       // Agregamos un timestamp para evitar caché agresivo del navegador
        const res = await fetch(`/api/examenes?search=${searchTerm}&t=${Date.now()}`);
-       
-       if (!res.ok) {
-         // Si la API falla (ej. 404 o 500), lanzamos error para no romper el JSON parse
-         throw new Error(`Error ${res.status}: ${res.statusText}`);
-       }
-       
+       if (!res.ok) throw new Error(`Error ${res.status}`);
        const data = await res.json();
        setExams(data);
      } catch (error) {
        console.error("Error cargando exámenes:", error);
-       setExams([]); // Limpiamos la lista en caso de error
+       setExams([]); 
      } finally {
        setIsLoadingExams(false);
      }
   };
 
-  // 3. FUNCIONES DE MANEJO DE EVENTOS
+  // --- HANDLERS ---
   const handleCreateNew = () => {
+    setEditingId(null); // Aseguramos que no estamos editando
     setShowWorkbench(true);
+  };
+
+  // Función que se activa al dar clic en "Editar"
+  const handleEdit = (id: string) => {
+    setShowWorkbench(false); // Cerramos el creador si está abierto
+    setEditingId(id); // Activamos el modo edición con el ID seleccionado
   };
 
   const handleSuccessSave = () => {
       setShowWorkbench(false);
-      fetchExams(); // Recargamos la lista automáticamente
+      setEditingId(null); // Cerramos editor
+      fetchExams(); // Recargamos lista
   };
 
   const handleBackToList = () => {
     setShowWorkbench(false);
+    setEditingId(null);
   };
 
-  // 4. RENDERIZADO CONDICIONAL (Returns tempranos)
-  
-  // Si está cargando la sesión de usuario...
-  if (status === "loading") {
-      return <div className="p-8 text-slate-500">Cargando sesión...</div>;
-  }
+  // --- RENDERIZADO ---
+  if (status === "loading") return <div className="p-8 text-slate-500">Cargando sesión...</div>;
 
-  // Si estamos en modo edición/creación...
+  // 1. MODO CREACIÓN (Workbench)
   if (showWorkbench) {
     return (
-      <div className="animate-in slide-in-from-right duration-300">
-        <div className="relative">
-             <button 
-                onClick={handleBackToList}
-                className="absolute top-4 left-4 z-50 bg-white p-2 rounded-full shadow-md text-slate-500 hover:text-primary transition-colors border border-slate-100"
-                title="Volver"
-             >
-                <span className="material-symbols-outlined">arrow_back</span>
-             </button>
-             {/* Pasamos la función para que al guardar se cierre el editor */}
-             <ExamWorkbench  /> 
-        </div>
+      <div className="animate-in slide-in-from-right duration-300 relative">
+         <button onClick={handleBackToList} className="absolute top-4 left-4 z-50 bg-white p-2 rounded-full shadow-md text-slate-500 hover:text-primary transition-colors border border-slate-100">
+            <span className="material-symbols-outlined">arrow_back</span>
+         </button>
+         <ExamWorkbench onSuccess={handleSuccessSave} /> 
       </div>
     );
   }
 
-  // VISTA PRINCIPAL (LISTA)
+  // 2. MODO EDICIÓN (EditExam - NUEVO)
+  if (editingId) {
+    return (
+      <div className="animate-in slide-in-from-right duration-300 relative p-8">
+         {/* EditExam ya tiene su propio botón de cerrar, pero pasamos el handler */}
+        <EditExam 
+          id={editingId} 
+          onClose={handleBackToList} 
+          onSuccess={handleSuccessSave} 
+        />
+      </div>
+    );
+  }
+
+  // 3. VISTA PRINCIPAL (LISTA)
   return (
     <div className="p-8 space-y-8 bg-[#F9F7FA] min-h-screen font-display">
       
@@ -115,10 +120,7 @@ export default function ExamenesPage() {
           <h2 className="text-2xl font-black text-slate-800">Catálogo de Exámenes</h2>
           <p className="text-slate-500 text-sm mt-1">Gestiona tus pruebas de laboratorio.</p>
         </div>
-        <button 
-          onClick={handleCreateNew}
-          className="group flex items-center gap-2 px-6 py-3 bg-[#9727aa] text-white font-bold rounded-xl shadow-lg shadow-[#9727aa]/30 hover:bg-[#8a239b] transition-all"
-        >
+        <button onClick={handleCreateNew} className="group flex items-center gap-2 px-6 py-3 bg-[#9727aa] text-white font-bold rounded-xl shadow-lg shadow-[#9727aa]/30 hover:bg-[#8a239b] transition-all">
           <span className="material-symbols-outlined">add</span>
           Crear Nuevo
         </button>
@@ -127,22 +129,14 @@ export default function ExamenesPage() {
       {/* Buscador */}
       <div className="relative w-full md:w-96">
           <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-          <input 
-            type="text" 
-            placeholder="Buscar..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/50 outline-none"
-          />
+          <input type="text" placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/50 outline-none" />
       </div>
 
       {/* Grid de Resultados */}
       {isLoadingExams ? (
          <div className="text-center py-20 text-slate-400">Cargando datos...</div>
       ) : exams.length === 0 ? (
-         <div className="text-center py-20 text-slate-400 border-2 border-dashed border-slate-200 rounded-xl">
-            No se encontraron exámenes.
-         </div>
+         <div className="text-center py-20 text-slate-400 border-2 border-dashed border-slate-200 rounded-xl">No se encontraron exámenes.</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {exams.map((exam) => (
@@ -155,7 +149,12 @@ export default function ExamenesPage() {
                <p className="pl-3 text-xs text-slate-400 mb-4">{exam.category}</p>
                <div className="pl-3 border-t border-slate-50 pt-3 flex justify-between items-center">
                   <span className="font-black text-slate-700">${exam.price?.toFixed(2)}</span>
-                  <button className="text-xs font-bold text-primary bg-primary/5 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                  
+                  {/* --- BOTÓN EDITAR CONECTADO --- */}
+                  <button 
+                      onClick={() => handleEdit(exam._id)} 
+                      className="text-xs font-bold text-primary bg-primary/5 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"
+                  >
                       Editar
                   </button>
                </div>
