@@ -3,11 +3,12 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongoose";
 import Exam from "@/models/exam";
 
-// GET: Obtener un examen por id
+// GET: Load a single exam by code.
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();
     const { id } = await params;
+    // Normalize code to match stored format.
     const code = id?.toUpperCase().trim();
     if (!code) {
       return NextResponse.json({ error: "Codigo de examen requerido" }, { status: 400 });
@@ -25,7 +26,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   }
 }
 
-// PUT: Actualizar un examen existente
+// PUT: Update exam metadata and results.
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();
@@ -52,7 +53,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   }
 }
 
-// DELETE: (Opcional) Por si quieres borrar exámenes también
+// DELETE: Remove an exam by code.
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();

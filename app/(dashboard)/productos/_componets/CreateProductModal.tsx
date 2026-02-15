@@ -7,6 +7,7 @@ type Props = {
   onProductCreated: () => void;
 };
 
+// Modal form to create a new inventory product.
 export default function CreateProductModal({ isOpen, onClose, onProductCreated }: Props) {
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -51,7 +52,7 @@ export default function CreateProductModal({ isOpen, onClose, onProductCreated }
       
       
       setTimeout(() => {
-        onProductCreated(); // Avisamos al padre para cerrar y recargar
+        onProductCreated(); 
         setShowSuccess(false);
         setFormData({ serial: "", name: "", unit: "", stock: "", price: "", minStock: "", category: "General" });
       }, 1500);

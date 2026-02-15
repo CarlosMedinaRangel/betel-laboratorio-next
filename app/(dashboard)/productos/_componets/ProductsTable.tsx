@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 type Product = {
   _id: string;
-  serial: string; // ✅ Campo nuevo
+  serial: string; 
   name: string;
   unit: number;
   stock: number;
@@ -12,6 +12,7 @@ type Product = {
   category: string;
 };
 
+// Inventory table with status indicators.
 export default function ProductsTable() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);

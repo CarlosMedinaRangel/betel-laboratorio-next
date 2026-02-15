@@ -4,7 +4,7 @@ import User from "../../../models/users";
 import { NextResponse, NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
 
-// Definimos una interfaz para el cuerpo de la petición
+// Request body for user creation.
 interface UserRequestBody {
     name: string;
     email: string;
@@ -12,6 +12,7 @@ interface UserRequestBody {
     role?: string;
 }
 
+// Create a user with hashed password.
 export async function POST(request: NextRequest) {
     try {
         await connectionToDatabase();
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // ENCRIPTAR CONTRASEÑA 🔐
+        // Hash password before storing.
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({

@@ -4,11 +4,11 @@ import connectDB from "@/lib/mongoose";
 import Exam from "@/models/exam";
 import Product from "@/models/product";
 
-
+// List exams with optional search by code or name.
 export async function GET(request: Request) {
   try {
     await connectDB();
-    // Obtenemos los parámetros de búsqueda de la URL
+    // Build search query when a term is provided.
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
 
@@ -31,6 +31,7 @@ export async function GET(request: Request) {
 }
 
 
+// Create an exam and decrement stock for each component.
 export async function POST(request: Request) {
   try {
     await connectDB();
@@ -38,19 +39,23 @@ export async function POST(request: Request) {
     const payload = { ...data };
     const components = Array.isArray(payload?.components) ? payload.components : [];
 
+    // Deduct stock with validation; supports optional transaction session.
     const decrementStock = async (useSession?: mongoose.ClientSession) => {
-      const decremented: Array<{ productId: string; quantity: number }> = [];
+      const decremented: Array<{ productId: mongoose.Types.ObjectId; quantity: number }> = [];
 
       for (const component of components) {
         const quantity = Number(component?.quantity) || 0;
         const productId = component?.productId;
+        const isValidProductId = mongoose.Types.ObjectId.isValid(productId);
 
-        if (!productId || quantity <= 0) {
+        if (!productId || !isValidProductId || quantity <= 0) {
           throw new Error("Componente invalido en el examen");
         }
 
+        const productObjectId = new mongoose.Types.ObjectId(productId);
+
         const updated = await Product.findOneAndUpdate(
-          { _id: productId, stock: { $gte: quantity } },
+          { _id: productObjectId, stock: { $gte: quantity } },
           { $inc: { stock: -quantity } },
           { new: true, session: useSession }
         );
@@ -60,7 +65,7 @@ export async function POST(request: Request) {
           throw new Error(`Stock insuficiente para ${productName}`);
         }
 
-        decremented.push({ productId, quantity });
+        decremented.push({ productId: productObjectId, quantity });
       }
 
       return decremented;
@@ -84,8 +89,9 @@ export async function POST(request: Request) {
     } catch (error: any) {
       const message = error?.message || "Error interno del servidor";
 
+      // Fallback for environments without transaction support.
       if (message.includes("Transaction numbers are only allowed")) {
-        let decremented: Array<{ productId: string; quantity: number }> = [];
+        let decremented: Array<{ productId: mongoose.Types.ObjectId; quantity: number }> = [];
 
         try {
           decremented = await decrementStock();

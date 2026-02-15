@@ -22,6 +22,7 @@ type DashboardData = {
   };
 };
 
+// Dashboard view with KPIs, alerts, and quick actions.
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();

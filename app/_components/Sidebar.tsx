@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { usePathname } from "next/navigation"; // 1. Importamos esto
+import { usePathname } from "next/navigation"; 
 import Image from "next/image";
 
 type UserWithRole = {
@@ -17,14 +17,14 @@ type SessionWithRole = {
 
 export default function Sidebar() {
   const { data: session } = useSession() as { data: SessionWithRole | null, status: string };
-  const pathname = usePathname(); // 2. Obtenemos la ruta actual (ej: "/productos")
+  const pathname = usePathname(); 
 
-  // 3. Definimos los enlaces aquí para no repetir código
+  // Navigation items used to render the sidebar menu.
   const menuItems = [
     { name: "Dashboard", href: "/", icon: "dashboard" }, 
     { name: "Productos", href: "/productos", icon: "inventory_2" },
     { name: "Examenes", href: "/examenes", icon: "group" },
-    // Aquí puedes agregar más: { name: "Pacientes", href: "/pacientes", icon: "group" },
+  
   ];
 
   return (
@@ -50,8 +50,7 @@ export default function Sidebar() {
       {/* NAVEGACIÓN DINÁMICA */}
       <nav className="mt-6 px-4 flex-1 space-y-1">
         {menuItems.map((item) => {
-          // Lógica para saber si este botón está activo
-          // Si es dashboard, debe ser exacto. Si es otra ruta, puede empezar con ella (para subpáginas)
+          // Active state matches exact dashboard or nested routes.
           const isActive = item.href === "/" 
             ? pathname === "/" 
             : pathname.startsWith(item.href);
@@ -62,8 +61,8 @@ export default function Sidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                 isActive
-                  ? "bg-[#9727aa] text-white shadow-lg shadow-[#9727aa]/30" // ESTILO ACTIVO (Morado)
-                  : "text-slate-600 hover:bg-[#9727aa]/10 hover:text-[#9727aa]" // ESTILO INACTIVO (Gris/Blanco)
+                  ? "bg-[#9727aa] text-white shadow-lg shadow-[#9727aa]/30" 
+                  : "text-slate-600 hover:bg-[#9727aa]/10 hover:text-[#9727aa]" 
               }`}
             >
               <span className="material-symbols-outlined">{item.icon}</span>
@@ -75,6 +74,7 @@ export default function Sidebar() {
 
       {/* FOOTER DEL USUARIO */}
       <div className="p-4 mt-auto border-t border-[#9727aa]/10">
+        {/* Session preview and sign out action. */}
         <div className="flex items-center gap-3 p-2 rounded-xl bg-[#9727aa]/5">
           <div className="w-10 h-10 rounded-full bg-[#9727aa]/20 flex items-center justify-center text-[#9727aa] font-bold">
             {session?.user?.name?.charAt(0) || "U"}

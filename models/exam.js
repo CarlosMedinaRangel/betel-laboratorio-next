@@ -1,6 +1,6 @@
 import mongoose, { Schema, model, models } from "mongoose";
 
-// Sub-esquema para los Rangos de Referencia
+// Sub-schema for reference ranges per gender and age.
 const ReferenceRangeSchema = new Schema({
   gender: { type: String, required: true, enum: ["M", "F", "Ambos", "Niños"] },
   ageMin: { type: Number, required: true },
@@ -11,28 +11,28 @@ const ReferenceRangeSchema = new Schema({
   unit: { type: String, required: false }, // ej: mg/dL
 });
 
-// Sub-esquema para los Componentes (Insumos/Reactivos)
+// Sub-schema for inventory components used by an exam.
 const ExamComponentSchema = new Schema({
-  productId: { type: String, required: true }, // ID del producto en tu colección de inventario
-  name: { type: String, required: true }, // Guardamos el nombre por si se borra el producto original
+  productId: { type: Schema.Types.ObjectId, ref: "Product", required: true }, 
+  name: { type: String, required: true }, 
   category: { type: String },
-  cost: { type: Number, required: true }, // Costo al momento de configurar el examen (snapshot)
+  cost: { type: Number, required: true }, 
   quantity: { type: Number, required: true, default: 1 },
   usagePhase: { type: String, default: "Procesamiento" },
 });
 
-// Esquema Principal del Examen
+// Main exam document schema.
 const ExamSchema = new Schema(
   {
     code: { type: String, required: true, unique: true, uppercase: true, trim: true },
     name: { type: String, required: true, trim: true },
-    category: { type: String, required: true }, // Hematología, Química, etc.
-    sampleType: { type: String, required: true }, // Suero, Plasma, etc.
+    category: { type: String, required: true }, 
+    sampleType: { type: String, required: true }, 
     methodology: { type: String },
-    tat: { type: Number, default: 24 }, // Turnaround Time en horas
+    tat: { type: Number, default: 24 }, 
     price: { type: Number, required: true },
     status: { type: String, enum: ["activo", "En proceso", "archivado"], default: "activo" },
-    resultados: { type: String, default: "Esperando resultados..." }, // Descripción de los resultados o interpretación
+    resultados: { type: String, default: "Esperando resultados..." }, 
     
     // Arrays de sub-documentos
     ranges: [ReferenceRangeSchema],
@@ -44,7 +44,7 @@ const ExamSchema = new Schema(
   }
 );
 
-// Evitar recompilar el modelo si ya existe (Hot Reload de Next.js)
+// Reuse model on hot reload.
 const Exam = models.Exam || model("Exam", ExamSchema);
 
 export default Exam;
