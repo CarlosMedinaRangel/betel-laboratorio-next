@@ -51,7 +51,8 @@ interface ExamWorkbenchProps {
   onSuccess?: () => void;
 }
 
-// --- PLANTILLAS PRE-CONFIGURADAS (Para reutilizar) ---
+// Multi-step exam creation flow with ranges and components.
+
 const RANGE_PRESETS = [
   { label: "Adultos (General)", gender: "Ambos", min: 18, max: 99, unit: "Años" },
   { label: "Hombres Adultos", gender: "M", min: 18, max: 60, unit: "Años" },
@@ -188,7 +189,7 @@ export default function ExamWorkbench({ onSuccess }: ExamWorkbenchProps) {
         methodology: examData.methodology,
         tat: Number(examData.tat) || 24,
         price: Number(examData.price) || 0,
-        status: "active",
+        status: "activo",
         
         // Mapeamos los rangos asegurando números
         ranges: examData.ranges.map(r => ({
@@ -212,7 +213,7 @@ export default function ExamWorkbench({ onSuccess }: ExamWorkbenchProps) {
         }))
       };
 
-    const response = await fetch("/api/examenes", { // Ruta correcta del API en este proyecto
+    const response = await fetch("/api/examenes", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formattedPayload),

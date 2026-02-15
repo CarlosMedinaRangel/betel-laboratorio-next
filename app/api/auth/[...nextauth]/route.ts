@@ -4,6 +4,7 @@ import connectToDatabase from "../../../../lib/mongoose";
 import User from "../../../../models/users";
 import bcrypt from "bcryptjs";
 
+// NextAuth configuration using credentials provider.
 const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -37,6 +38,7 @@ const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  // Enrich JWT and session with role/id for UI access.
   callbacks: {
     // 2. Aquí solucionamos 'token' y 'user' definiendo sus tipos
     async jwt({ token, user }: { token: any; user?: any }) {
@@ -55,12 +57,14 @@ const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  // Custom sign-in route.
   pages: {
     signIn: "/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
 
+// Export GET/POST handlers for the auth route.
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

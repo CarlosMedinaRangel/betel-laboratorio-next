@@ -1,14 +1,15 @@
 "use client"; 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react"; // 1. Agregamos useState
+import { useEffect, useState } from "react";
 
 // Importamos tus componentes (Asegúrate de que la ruta sea correcta)
 // Nota: Usé "_componets" porque así lo tenías en tu código, 
 // pero revisa si la carpeta se llama "_components" o "_componets".
 import ProductsTable from "./_componets/ProductsTable"; 
-import CreateProductModal from "./_componets/CreateProductModal"; // 2. Importamos el Modal nuevo
+import CreateProductModal from "./_componets/CreateProductModal"; 
 
+// Inventory view with table and create modal.
 export default function ProductosPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -26,8 +27,8 @@ export default function ProductosPage() {
 
   // 4. Función mágica: Cuando se crea un producto, actualizamos la tabla
   const handleProductCreated = () => {
-    setRefreshKey((prev) => prev + 1); // Cambiar esto obliga a la tabla a recargar
-    setIsModalOpen(false); // Cerramos el modal
+    setRefreshKey((prev) => prev + 1); 
+    setIsModalOpen(false);
   };
 
   return (

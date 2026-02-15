@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { timeStamp } from "node:console";
 
+// Inventory item schema used by products API and exams.
 const productSchema = new mongoose.Schema({
   serial: { type: String, unique: true, required: true },
   name: { type: String, required: true },
@@ -15,6 +16,7 @@ const productSchema = new mongoose.Schema({
 , { timestamps: true }
 );
 
+// Reuse model on hot reload.
 const Product = mongoose.models.Product || mongoose.model("Product", productSchema);
 
 export default Product;

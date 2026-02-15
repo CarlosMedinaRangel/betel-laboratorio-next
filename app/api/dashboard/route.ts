@@ -3,26 +3,27 @@ import  connectDB  from "@/lib/mongoose";
 import Product from "@/models/product";
 import Exam from "@/models/exam";
 
+// Aggregates KPIs and low stock alerts for the dashboard.
 export async function GET() {
   try {
     await connectDB();
 
-    // 1. Obtener Productos con Stock Bajo (Stock <= MinStock)
+    // Low stock list for alert panel.
     const lowStockProducts = await Product.find({
       $expr: { $lte: ["$stock", "$minStock"] }
     }).limit(5); // Traemos solo los 5 más críticos
 
-    // 2. Estadísticas de Exámenes (Agrupados por Estado)
+    // Status distribution used by the chart.
     const examStats = await Exam.aggregate([
       {
         $group: {
-          _id: "$status", // Agrupa por "active", "En proceso", "Archivado"
+          _id: "$status", 
           count: { $sum: 1 }
         }
       }
     ]);
 
-    // 3. Totales Generales (Para las tarjetas KPI)
+    // Global totals used by KPI cards.
     const totalExams = await Exam.countDocuments();
     
     // Exámenes creados hoy

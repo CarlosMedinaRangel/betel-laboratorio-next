@@ -7,6 +7,7 @@ interface EditExamProps {
   onSuccess: () => void;
 }
 
+// Edit existing exam metadata and results.
 export default function EditExam({ code, onClose, onSuccess }: EditExamProps) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -18,7 +19,7 @@ export default function EditExam({ code, onClose, onSuccess }: EditExamProps) {
     category: "",
     price: 0,
     tat: 24,
-    resultados: "", // Aquí guardaremos la interpretación/resultados
+    resultados: "", 
     status: "activo"
   });
 
@@ -37,7 +38,7 @@ export default function EditExam({ code, onClose, onSuccess }: EditExamProps) {
             category: data.category || "Hematología",
             price: data.price || 0,
             tat: data.tat || 24,
-            resultados: data.resultados || "", // Carga lo que haya o vacío
+            resultados: data.resultados || "", 
             status: data.status || "activo"
           });
         } else {

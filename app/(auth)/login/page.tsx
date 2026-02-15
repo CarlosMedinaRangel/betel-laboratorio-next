@@ -1,13 +1,14 @@
-// app/(auth)/login/page.tsx
-"use client"; // 👈 OBLIGATORIO
+
+"use client"; // Required for hooks in this page
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image"; // Si usas next/image
+import Image from "next/image"; 
 
 export default function LoginPage() {
+  // Login form with credential-based auth.
   const router = useRouter();
   
   // Estados para el formulario
@@ -33,7 +34,7 @@ export default function LoginPage() {
     const res = await signIn("credentials", {
       email,
       password,
-      redirect: false, // Importante para manejar el error nosotros mismos
+      redirect: false, 
     });
 
     if (res?.error) {
@@ -41,7 +42,7 @@ export default function LoginPage() {
       setLoading(false);
     } else {
       // Login exitoso -> Redirigir al Dashboard
-      router.push("/"); // Asegúrate que esta ruta exista (app/(dashboard)/page.tsx)
+      router.push("/"); 
       router.refresh();
     }
   };

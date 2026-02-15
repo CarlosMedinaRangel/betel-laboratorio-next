@@ -3,7 +3,7 @@ import connectDB from "@/lib/mongoose";
 import Product from "@/models/product";
 
 
-
+// List products for inventory views.
 export async function GET() {
   try {
     await connectDB();
@@ -15,6 +15,7 @@ export async function GET() {
 }
 
 
+// Create a product with basic validation and duplicates check.
 export async function POST(request: Request) {
   try {
     await connectDB();

@@ -14,13 +14,14 @@ type ExamSummary = {
   status: string;
 };
 
+// Exams catalog with create/edit flows and search.
 export default function ExamenesPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   
   // Estados de interfaz
-  const [showWorkbench, setShowWorkbench] = useState(false); // Para CREAR
-  const [editingId, setEditingId] = useState<string | null>(null); // Para EDITAR (Nuevo estado)
+  const [showWorkbench, setShowWorkbench] = useState(false); 
+  const [editingId, setEditingId] = useState<string | null>(null); 
   const [searchTerm, setSearchTerm] = useState("");
   
   // Estados de datos (Backend)
@@ -65,14 +66,14 @@ export default function ExamenesPage() {
 
   // Función que se activa al dar clic en "Editar"
   const handleEdit = (id: string) => {
-    setShowWorkbench(false); // Cerramos el creador si está abierto
-    setEditingId(id); // Activamos el modo edición con el ID seleccionado
+    setShowWorkbench(false);
+    setEditingId(id); 
   };
 
   const handleSuccessSave = () => {
       setShowWorkbench(false);
-      setEditingId(null); // Cerramos editor
-      fetchExams(); // Recargamos lista
+      setEditingId(null); 
+      fetchExams(); 
   };
 
   const handleBackToList = () => {
