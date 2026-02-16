@@ -1,7 +1,11 @@
 
+<img width="500" height="500" alt="logo" src="https://github.com/user-attachments/assets/90dc60f6-430c-4258-a780-989375befcf6" />
 # Sistema de Gestion - Betel Laboratorio Clinico
 
 Plataforma web para administrar la operacion del Laboratorio Clinico Betel. Centraliza inventario, configuracion de examenes, costos y una vista operativa con indicadores clave.
+
+<img width="1915" height="943" alt="image" src="https://github.com/user-attachments/assets/bc7f0ce1-9df5-4bb1-b9a9-bed98f515309" />
+
 
 ## Descripcion General
 
